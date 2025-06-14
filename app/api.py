@@ -1,0 +1,219 @@
+from fastapi import FastAPI, Request, Query # type: ignore
+from fastapi.middleware.cors import CORSMiddleware # type: ignore
+from pydantic import BaseModel # type: ignore   
+from typing import Optional, List
+import os
+import requests
+from search import search
+import json
+
+app = FastAPI()
+# CORS middleware to allow requests from any origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
+
+class QueryRequest(BaseModel):
+    question: str
+    image: Optional[str] = None
+
+class Link(BaseModel):
+    url: str
+    text: str
+
+class QueryResponse(BaseModel):
+    answer: str
+    links: Optional[List[Link]] = None
+
+# LLM Answering Logic
+import os
+import requests
+
+def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistralai/mistral-7b-instruct"):
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable not set")
+
+    # Prepare message text
+    chunk_texts = "\n\n".join(
+    f"{i+1}. {chunk['content'].strip()}\n(Source: {chunk['url']})"
+    if chunk.get("url") else
+    f"{i+1}. {chunk['content'].strip()}"
+    for i, chunk in enumerate(top_chunks)
+    )
+    # return chunk_texts
+    user_message = [
+        { "type": "text", "text": f"Here is a question:\n\n{question}\n\nHere are some related chunks:\n\n{chunk_texts}\n\nBased on the chunks above, give the best possible answer." }
+    ]
+
+    if image_base64:
+        user_message.append({
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:image/png;base64,{image_base64}"
+            }
+        })
+
+    # Prepare request
+    payload = {
+        "model": model,
+        "max_tokens": 3700,
+        "messages": [
+            {
+                "role": "system",
+                "content": '''You are a helpful virtual TA for the Tools in Data Science course. Respond clearly and concisely.
+                You will be given a question, an optional image and some related chunks of text. Use the best chunks to answer the question.
+                output must follow the format:
+                {
+                    "answer": "You must use `gpt-3.5-turbo-0125`, even if the AI Proxy only supports `gpt-4o-mini`. Use the OpenAI API directly for this question.",
+                    "links": [
+                        {
+                        "url": "https://discourse.onlinedegree.iitm.ac.in/t/ga5-question-8-clarification/155939/4",
+                        "text": "Use the model that’s mentioned in the question."
+                        },
+                        {
+                        "url": "https://discourse.onlinedegree.iitm.ac.in/t/ga5-question-8-clarification/155939/3",
+                        "text": "My understanding is that you just have to use a tokenizer, similar to what Prof. Anand used, to get the number of tokens and multiply that by the given rate."
+                        }
+                    ]
+                }
+                answer is the main response to the question, and links is a list of relevant discourse links that can help the user understand the answer better.
+                If you cannot find any relevant links, return an empty list.
+                If the question is not related to the Tools in Data Science course, respond with "I am sorry, I cannot answer this question." and return an empty list for links.
+                text in links should be a short description of the link, and url should be the actual discourse link.
+                '''
+            },
+            {
+                "role": "user",
+                "content": user_message
+            }
+        ]
+    }
+    # url = "https://aipipe.org/openrouter/v1/chat/completions"
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    response = requests.post(
+        url=url,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
+        json=payload
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"OpenAI error {response.status_code}: {response.text}")
+    response_data = response.json()
+    usage = response_data.get("usage", {})
+    print(f"[Token usage] prompt: {usage.get('prompt_tokens')}, completion: {usage.get('completion_tokens')}, total: {usage.get('total_tokens')}")
+
+    return response_data["choices"][0]["message"]["content"]
+    # return response.json()["choices"][0]["message"]["content"]
+    # return chunk_texts
+
+
+@app.post("/api/")
+def handle_query(input: QueryRequest):
+    try:
+        top_chunks = [chunk for _, chunk in search(query=input.question, image_base64=input.image, top_k=5)]
+
+        response = ask_llm_with_chunks(
+            question=input.question,
+            top_chunks=top_chunks,
+            image_base64=input.image, # or any free OpenRouter model like "mistralai/mistral-7b-instruct"
+        )
+
+        return json.loads(response)
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app)
+## testing the ask_llm_with_chunks function ##
+# question = "should i take this course?"
+# top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
+
+# print(ask_llm_with_chunks(
+#     question=question,
+#     top_chunks=top_chunks
+# ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#     # Build context from retrieved chunks
+#     context = "\n\n".join([f"[{c['id']}]\n{c['content']}" for c in top_chunks])
+
+#     # Prepare message prompt
+#     prompt_parts = [f"Answer the following question using the context below.\n\nContext:\n{context}\n\nQuestion:\n{question}"]
+#     messages = [{"role": "user", "content": prompt_parts[0]}]
+
+#     # If an image is included, treat it as a multimodal prompt (if supported)
+#     if image_base64:
+#         messages[0]["content"] = [
+#             {"type": "text", "text": prompt_parts[0]},
+#             {"type": "image_url", "image_url": {"url": f"data:image/webp;base64,{image_base64}"}}
+#         ]
+
+#     # API request to OpenRouter
+#     response = requests.post(
+#         "https://openrouter.ai/api/v1/chat/completions",
+#         headers={
+#             "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
+#             "Content-Type": "application/json"
+#         },
+#         json={
+#             "model": "gpt-3.5-turbo",  # Or change to a vision-capable model if needed
+#             "messages": messages
+#         }
+#     )
+
+#     if response.status_code != 200:
+#         raise Exception(f"OpenAI API error: {response.status_code}, {response.text}")
+
+#     answer_text = response.json()["choices"][0]["message"]["content"]
+
+#     # Default response format
+#     return {
+#         "answer": answer_text.strip(),
+#         "links": []  # Your retrieval logic should populate relevant discourse links if found
+#     }
+
+# @app.post("/api", response_model=QueryResponse)
+# def ask(query: QueryRequest):
+#     top_chunks = search(query.question, top_k=3) if query.question else []
+#     response = generate_answer(query.question, top_chunks, image_base64=query.image)
+
+#     # If generate_answer returned a dict (with 'answer' and 'links'), extract them
+#     answer = response.get("answer", "")
+#     links = response.get("links", [])
+
+#     # If top_chunks were used and links are empty, fill with default source links
+#     if top_chunks and not links:
+#         links = [
+#         ]
+
+#     return {"answer": answer, "links": links}
+
