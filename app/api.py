@@ -114,7 +114,9 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
     # return response.json()["choices"][0]["message"]["content"]
     # return chunk_texts
 
-
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions."}
 @app.post("/api/")
 def handle_query(input: QueryRequest):
     try:
