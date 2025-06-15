@@ -4,7 +4,7 @@ from pydantic import BaseModel # type: ignore
 from typing import Optional, List
 import os
 import requests
-from search import search
+from .search import search
 import json
 
 app = FastAPI()

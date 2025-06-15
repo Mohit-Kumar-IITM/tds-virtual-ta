@@ -1,7 +1,7 @@
 import json
 import base64
 import numpy as np
-from compute_embeddings import compute_embeddings
+from .compute_embeddings import compute_embeddings
 import heapq
 import os
 # Cosine similarity
