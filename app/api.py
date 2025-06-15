@@ -118,14 +118,20 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
 def read_root():
     return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions."}
 @app.post("/api/")
-def handle_query(input: QueryRequest):
+async def handle_query(request: Request):
     try:
-        top_chunks = [chunk for _, chunk in search(query=input.question, image_base64=input.image, top_k=5)]
+        data = await request.json()
+        question = data.get("question")
+        image = data.get("image")
 
+        if not question:
+            return {"error": "Missing 'question'"}
+
+        top_chunks = [chunk for _, chunk in search(query=question, image_base64=image, top_k=5)]
         response = ask_llm_with_chunks(
-            question=input.question,
+            question=question,
             top_chunks=top_chunks,
-            image_base64=input.image, # or any free OpenRouter model like "mistralai/mistral-7b-instruct"
+            image_base64=image
         )
 
         return json.loads(response)
@@ -135,6 +141,23 @@ def handle_query(input: QueryRequest):
             "success": False,
             "error": str(e)
         }
+# def handle_query(input: QueryRequest):
+#     try:
+#         top_chunks = [chunk for _, chunk in search(query=input.question, image_base64=input.image, top_k=5)]
+
+#         response = ask_llm_with_chunks(
+#             question=input.question,
+#             top_chunks=top_chunks,
+#             image_base64=input.image, # or any free OpenRouter model like "mistralai/mistral-7b-instruct"
+#         )
+
+#         return json.loads(response)
+
+#     except Exception as e:
+#         return {
+#             "success": False,
+#             "error": str(e)
+#         }
 
 # if __name__ == "__main__":
 #     import uvicorn
