@@ -140,15 +140,13 @@ def handle_query(input: QueryRequest):
 #     import uvicorn
 #     uvicorn.run(app)
 ## testing the ask_llm_with_chunks function ##
-# question = "should i take this course?"
-# top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
+question = "should i take this course?"
+top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
 
-# print(ask_llm_with_chunks(
-#     question=question,
-#     top_chunks=top_chunks
-# ))
-
-
+print(ask_llm_with_chunks(
+    question=question,
+    top_chunks=top_chunks
+))
 
 
 
@@ -165,57 +163,5 @@ def handle_query(input: QueryRequest):
 
 
 
-#     # Build context from retrieved chunks
-#     context = "\n\n".join([f"[{c['id']}]\n{c['content']}" for c in top_chunks])
 
-#     # Prepare message prompt
-#     prompt_parts = [f"Answer the following question using the context below.\n\nContext:\n{context}\n\nQuestion:\n{question}"]
-#     messages = [{"role": "user", "content": prompt_parts[0]}]
-
-#     # If an image is included, treat it as a multimodal prompt (if supported)
-#     if image_base64:
-#         messages[0]["content"] = [
-#             {"type": "text", "text": prompt_parts[0]},
-#             {"type": "image_url", "image_url": {"url": f"data:image/webp;base64,{image_base64}"}}
-#         ]
-
-#     # API request to OpenRouter
-#     response = requests.post(
-#         "https://openrouter.ai/api/v1/chat/completions",
-#         headers={
-#             "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
-#             "Content-Type": "application/json"
-#         },
-#         json={
-#             "model": "gpt-3.5-turbo",  # Or change to a vision-capable model if needed
-#             "messages": messages
-#         }
-#     )
-
-#     if response.status_code != 200:
-#         raise Exception(f"OpenAI API error: {response.status_code}, {response.text}")
-
-#     answer_text = response.json()["choices"][0]["message"]["content"]
-
-#     # Default response format
-#     return {
-#         "answer": answer_text.strip(),
-#         "links": []  # Your retrieval logic should populate relevant discourse links if found
-#     }
-
-# @app.post("/api", response_model=QueryResponse)
-# def ask(query: QueryRequest):
-#     top_chunks = search(query.question, top_k=3) if query.question else []
-#     response = generate_answer(query.question, top_chunks, image_base64=query.image)
-
-#     # If generate_answer returned a dict (with 'answer' and 'links'), extract them
-#     answer = response.get("answer", "")
-#     links = response.get("links", [])
-
-#     # If top_chunks were used and links are empty, fill with default source links
-#     if top_chunks and not links:
-#         links = [
-#         ]
-
-#     return {"answer": answer, "links": links}
 

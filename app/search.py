@@ -3,7 +3,7 @@ import base64
 import numpy as np
 from compute_embeddings import compute_embeddings
 import heapq
-
+import os
 # Cosine similarity
 def cosine_similarity(a, b):
     a, b = np.array(a), np.array(b)
@@ -16,10 +16,12 @@ def search(query, top_k=3, image_base64=None):
         query_embedding = compute_embeddings(query)
     else:
         query_embedding = compute_embeddings(question=query, image_base64=image_base64)
-     
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
     chunk_paths = [
-    "chunks_embedding.json",
-    "discourse_chunks_with_embeddings.json"
+    os.path.join(BASE_DIR, "chunks_embedding.json"),
+    os.path.join(BASE_DIR, "discourse_chunks_with_embeddings.json")
     ] 
     # Use a min-heap to keep track of top-k similar chunks
     heap = []
