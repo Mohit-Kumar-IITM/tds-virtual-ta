@@ -140,13 +140,13 @@ def handle_query(input: QueryRequest):
 #     import uvicorn
 #     uvicorn.run(app)
 ## testing the ask_llm_with_chunks function ##
-question = "should i take this course?"
-top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
+# question = "should i take this course?"
+# top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
 
-print(ask_llm_with_chunks(
-    question=question,
-    top_chunks=top_chunks
-))
+# print(ask_llm_with_chunks(
+#     question=question,
+#     top_chunks=top_chunks
+# ))
 
 
 
