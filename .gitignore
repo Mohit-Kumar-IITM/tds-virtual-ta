@@ -1,15 +1,17 @@
 # Python-generated files
 __pycache__/
-*.py[oc]
+*.py[cod]
+*.egg-info/
 build/
 dist/
 wheels/
-*.egg-info
 
 # Virtual environments
-.venv
+.venv/
+env/
+venv/
 
-# some more files
+# Sensitive or unnecessary files
 openrouter_key.json
 app/download.png
 app/embeddings_file_size_reducer.py
