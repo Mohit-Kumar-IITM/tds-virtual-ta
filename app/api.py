@@ -100,7 +100,8 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
         url=url,
         headers={
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://tds-virtual-ta-one-rouge.vercel.app"
         },
         json=payload
     )
