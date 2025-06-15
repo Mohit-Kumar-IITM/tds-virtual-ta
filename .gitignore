@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# some more files
+openrouter_key.json
+app/download.png
+app/embeddings_file_size_reducer.py
+app/sample_question_image.webp
