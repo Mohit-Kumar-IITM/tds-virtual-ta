@@ -34,8 +34,8 @@ import os
 import requests
 
 def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistralai/mistral-7b-instruct"):
-    # api_key = os.environ.get("OPENAI_API_KEY")
-    api_key = "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" 
+    api_key = os.environ.get("OPENAI_API_KEY")
+    # api_key = "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" 
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable not set")
 
