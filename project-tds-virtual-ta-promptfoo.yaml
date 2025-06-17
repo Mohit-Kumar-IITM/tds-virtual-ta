@@ -2,8 +2,9 @@ description: "TDS Virtual TA Project Sample (but not the actual evaluation) Ques
 
 providers:
   - id: https
+    provider: http  # <--- ADD THIS LINE
     config:
-      url: https://tds-virtual-ta-one-rouge.vercel.app/api/ # Replace this with your API endpoint
+      url: https://tds-virtual-ta-one-rouge.vercel.app/api/  # Your FastAPI endpoint
       method: POST
       headers:
         Content-Type: application/json
@@ -13,6 +14,7 @@ providers:
           "image": "{{ image }}"{% endif %}
         }
       transformResponse: json
+
 
 # Ensure JSON schema
 defaultTest:
@@ -78,4 +80,3 @@ writeLatestResults: true
 
 commandLineOptions:
   cache: true
-
