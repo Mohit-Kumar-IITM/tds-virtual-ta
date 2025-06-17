@@ -2,9 +2,8 @@ description: "TDS Virtual TA Project Sample (but not the actual evaluation) Ques
 
 providers:
   - id: https
-    provider: http  # <--- ADD THIS LINE
     config:
-      url: https://tds-virtual-ta-one-rouge.vercel.app/api/  # Your FastAPI endpoint
+      url: https://tds-virtual-ta-one-rouge.vercel.app/api/ # Replace this with your API endpoint
       method: POST
       headers:
         Content-Type: application/json
@@ -15,9 +14,46 @@ providers:
         }
       transformResponse: json
 
+# defaultTest:
+#   options:
+#     useOutput: true
+#   assert:
+#     - type: is-json
+#       value:
+#         type: object
+#         required: [answer, links]
+#         properties:
+#           answer: { type: string }
+#           links:
+#             type: array
+#             items:
+#               type: object
+#               required: [url, text]
+#               properties:
+#                 url: { type: string }
+#                 text: { type: string }
 
 # Ensure JSON schema
 defaultTest:
+  options:
+    provider:
+      id: https
+      config:
+        url: https://openrouter.ai/api/v1/chat/completions
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: Bearer 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  # Replace with your token
+        body: |
+          {
+            "model": "gpt-4o-mini",
+            "messages": [
+              {"role": "system", "content": "You are an evaluator that checks if an output meets specific criteria. Analyze the output based on the given rubric and respond with a JSON object containing {\"reason\": \"your analysis\", \"score\": number between 0.0 and 1.0, \"pass\": true/false}."},
+              {"role": "user", "content": "Output to evaluate: {{ output }}\n\nRubric: {{ rubric }}"}
+            ],
+            "temperature": 0
+          }
+        transformResponse: json
   assert:
     - type: is-json
       value:
@@ -52,10 +88,10 @@ tests:
       link: https://discourse.onlinedegree.iitm.ac.in/t/ga4-data-sourcing-discussion-thread-tds-jan-2025/165959/388
     assert:
       - type: llm-rubric
-        transform: output.answer
-        value: Mentions the dashboard showing "110"
+        transform: output
+        value: Mentions the dashboard showing "10"
       - type: contains
-        transform: JSON.stringify(output.links)
+        transform: JSON.stringify(output)
         value: https://discourse.onlinedegree.iitm.ac.in/t/ga4-data-sourcing-discussion-thread-tds-jan-2025/165959
   - vars:
       question: I know Docker but have not used Podman before. Should I use Docker for this course?

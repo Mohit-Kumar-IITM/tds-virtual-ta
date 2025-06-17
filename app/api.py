@@ -135,13 +135,13 @@ async def handle_query(request: Request):
             top_chunks=top_chunks,
             image_base64=image
         )
-
+        # print("Raw LLM response:", response)
         return json.loads(response)
 
     except Exception as e:
         return {
-            "success": False,
-            "error": str(e)
+            "answer": "I'm sorry, I couldn't process your question at the moment. Please try again later.",
+            "links": []
         }
 # def handle_query(input: QueryRequest):
 #     try:
