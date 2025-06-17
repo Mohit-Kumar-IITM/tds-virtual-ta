@@ -141,7 +141,8 @@ async def handle_query(request: Request):
     except Exception as e:
         return {
             "answer": "I'm sorry, I couldn't process your question at the moment. Please try again later.",
-            "links": []
+            "links": [],
+            "error": str(e)
         }
 # def handle_query(input: QueryRequest):
 #     try:
