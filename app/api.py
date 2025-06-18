@@ -242,7 +242,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
         ]
     }
 
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    url = "https://aipipe.org/openrouter/v1/chat/completions"  # or "https://openrouter.ai/api/v1/chat/completions"
     response = requests.post(
         url=url,
         headers={
@@ -260,7 +260,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions.", "version": "1.1"}
+    return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions.", "version": "1.1", "version_info": "now using aipipe.org for OpenRouter API"}
 
 @app.post("/api/")
 def handle_query(input: QueryRequest):
