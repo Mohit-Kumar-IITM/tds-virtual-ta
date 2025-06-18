@@ -94,14 +94,14 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
             }
         ]
     }
-    url = "https://aipipe.org/openrouter/v1/chat/completions"
-    # url = "https://openrouter.ai/api/v1/chat/completions"
+    # url = "https://aipipe.org/openrouter/v1/chat/completions"
+    url = "https://openrouter.ai/api/v1/chat/completions"
     response = requests.post(
         url=url,
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/"
+            # "HTTP-Referer": "https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/"
         },
         json=payload
     )
