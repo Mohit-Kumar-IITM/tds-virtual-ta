@@ -286,10 +286,10 @@ def handle_query(input: QueryRequest):
             }
 
     except json.JSONDecodeError:
-    return {
-        "answer": raw_response.strip(),  # use model output as-is
-        "links": []
-    }
+        return {
+            "answer": raw_response.strip(),  # use model output as-is
+            "links": []
+        }
 
 if __name__ == "__main__":
     import uvicorn  
