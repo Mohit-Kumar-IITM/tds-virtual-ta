@@ -227,6 +227,8 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
                         }
                     ]
                 }
+                and if relevent chunks contains data from the Tools in Data Science course (you can identify from .md files in the chunks) then the url should be like "links": [{"url": "https://tds.s-anand.net/#/docker.md"}]
+                change url to the actual course content link based on the chunk content.
                 answer is the main response to the question, and links is a list of relevant discourse links that can help the user understand the answer better.
                 If you cannot find any relevant links, return an empty list.
                 If the question is not related to the Tools in Data Science course, respond with "I am sorry, I cannot answer this question." and return an empty list for links.
