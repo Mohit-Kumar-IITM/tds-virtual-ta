@@ -291,9 +291,9 @@ def handle_query(input: QueryRequest):
             "links": []
         }
 
-if __name__ == "__main__":
-    import uvicorn  
-    uvicorn.run(app)
+# if __name__ == "__main__":
+#     import uvicorn  
+#     uvicorn.run(app)
 
 # curl "http://127.0.0.1:8000//api/" \
 #   -H "Content-Type: application/json" \
