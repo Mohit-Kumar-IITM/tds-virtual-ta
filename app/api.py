@@ -308,13 +308,13 @@ def handle_query(input: QueryRequest):
 #     uvicorn.run(app)
 
 ## testing the ask_llm_with_chunks function ##
-question = "what is fastpi?"
-top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
+# question = "what is fastpi?"
+# top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
 
-print(ask_llm_with_chunks(
-    question=question,
-    top_chunks=top_chunks
-))
+# print(ask_llm_with_chunks(
+#     question=question,
+#     top_chunks=top_chunks
+# ))
 
 # curl "http://127.0.0.1:8000//api/" \
 #   -H "Content-Type: application/json" \
