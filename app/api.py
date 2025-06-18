@@ -179,7 +179,7 @@ class QueryResponse(BaseModel):
     answer: str
     links: Optional[List[Link]] = None
 
-def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistralai/mistral-7b-instruct"):
+def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="openai/gpt-4o-mini"):
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable not set")
