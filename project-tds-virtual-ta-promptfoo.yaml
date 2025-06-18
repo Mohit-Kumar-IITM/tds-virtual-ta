@@ -1,6 +1,6 @@
 description: "TDS Virtual TA Project Sample (but not the actual evaluation) Questions"
 
-providers:
+providers: 
   - id: https
     config:
       url: https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/api/ # Replace this with your API endpoint

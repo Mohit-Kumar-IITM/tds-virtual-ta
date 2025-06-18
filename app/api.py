@@ -101,7 +101,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            # "HTTP-Referer": "https://tds-virtual-ta-one-rouge.vercel.app"
+            "HTTP-Referer": "https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/"
         },
         json=payload
     )
