@@ -285,12 +285,12 @@ def handle_query(input: QueryRequest):
                 "error": f"Invalid JSON: {str(je)}"
             }
 
-    except Exception as e:
-        return {
-            "answer": "I'm sorry, I couldn't process your question at the moment.",
-            "links": [],
-            "error": str(e)
-        }
+    except json.JSONDecodeError:
+    return {
+        "answer": raw_response.strip(),  # use model output as-is
+        "links": []
+    }
+
 if __name__ == "__main__":
     import uvicorn  
     uvicorn.run(app)
