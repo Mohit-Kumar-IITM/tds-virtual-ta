@@ -33,7 +33,7 @@ class QueryResponse(BaseModel):
 import os
 import requests
 
-def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistralai/mistral-7b-instruct"):
+def ask_llm_with_chunks(question, top_chunks, image_base64=None):
     api_key = os.environ.get("OPENAI_API_KEY")
     # api_key = "sk-or-v1-791497d4f8c9051be77" 
     if not api_key:
@@ -61,7 +61,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
 
     # Prepare request
     payload = {
-        "model": model,
+        "model": "openai/gpt-4o-mini", 
         "max_tokens": 3700,
         "messages": [
             {
@@ -94,14 +94,14 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistrala
             }
         ]
     }
-    # url = "https://aipipe.org/openrouter/v1/chat/completions"
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    url = "https://aipipe.org/openrouter/v1/chat/completions"
+    # url = "https://openrouter.ai/api/v1/chat/completions"
     response = requests.post(
         url=url,
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://tds-virtual-ta-one-rouge.vercel.app"
+            # "HTTP-Referer": "https://tds-virtual-ta-one-rouge.vercel.app"
         },
         json=payload
     )

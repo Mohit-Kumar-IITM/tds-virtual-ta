@@ -3,7 +3,7 @@ description: "TDS Virtual TA Project Sample (but not the actual evaluation) Ques
 providers:
   - id: https
     config:
-      url: https://tds-virtual-ta-ecru.vercel.app/api/ # Replace this with your API endpoint
+      url: https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/api/ # Replace this with your API endpoint
       method: POST
       headers:
         Content-Type: application/json
@@ -39,11 +39,11 @@ defaultTest:
     provider:
       id: https
       config:
-        url: https://openrouter.ai/api/v1/chat/completions
+        url: https://aipipe.org/openrouter/v1/chat/completions
         method: POST
         headers:
           Content-Type: application/json
-          Authorization: Bearer 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  # Replace with your token
+          Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjIzZjIwMDU1NTlAZHMuc3R1ZHkuaWl0bS5hYy5pbiJ9.5zlLZrtfIc8xAKyOzcw2_39X4EAm2UZx6gWf2ZbhJ08  # Replace with your token
         body: |
           {
             "model": "gpt-4o-mini",
