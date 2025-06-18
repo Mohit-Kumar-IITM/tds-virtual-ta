@@ -4,7 +4,7 @@ from pydantic import BaseModel # type: ignore
 from typing import Optional, List
 import os
 import requests
-from .search import search
+from search import search
 import json
 
 app = FastAPI()
@@ -33,9 +33,8 @@ class QueryResponse(BaseModel):
 import os
 import requests
 
-def ask_llm_with_chunks(question, top_chunks, image_base64=None):
+def ask_llm_with_chunks(question, top_chunks, image_base64=None, model="mistralai/mistral-7b-instruct"):
     api_key = os.environ.get("OPENAI_API_KEY")
-    # api_key = "sk-or-v1-791497d4f8c9051be77" 
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable not set")
 
@@ -61,7 +60,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
 
     # Prepare request
     payload = {
-        "model": "openai/gpt-4o-mini", 
+        "model": model,
         "max_tokens": 3700,
         "messages": [
             {
@@ -100,8 +99,7 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
         url=url,
         headers={
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            # "HTTP-Referer": "https://tds-virtual-ta-git-master-mohit-kumars-projects-33500668.vercel.app/"
+            "Content-Type": "application/json"
         },
         json=payload
     )
@@ -118,57 +116,30 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
 
 @app.get("/")
 def read_root():
-    return {
-            "message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions.",
-            "version": "2.0.0"
-        }
+    return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions.", "version_info":"1.0, solved the issue with the handle_query"}
 @app.post("/api/")
-async def handle_query(request: Request):
+def handle_query(input: QueryRequest):
     try:
-        data = await request.json()
-        question = data.get("question")
-        image = data.get("image")
+        top_chunks = [chunk for _, chunk in search(query=input.question, image_base64=input.image, top_k=5)]
 
-        if not question:
-            return {"error": "Missing 'question'"}
-
-        top_chunks = [chunk for _, chunk in search(query=question, image_base64=image, top_k=5)]
         response = ask_llm_with_chunks(
-            question=question,
+            question=input.question,
             top_chunks=top_chunks,
-            image_base64=image
+            image_base64=input.image, # or any free OpenRouter model like "mistralai/mistral-7b-instruct"
         )
-        # print("Raw LLM response:", response)
+
         return json.loads(response)
 
     except Exception as e:
         return {
-            "answer": "I'm sorry, I couldn't process your question at the moment. Please try again later.",
-            "links": [],
+            "success": False,
             "error": str(e)
         }
-# def handle_query(input: QueryRequest):
-#     try:
-#         top_chunks = [chunk for _, chunk in search(query=input.question, image_base64=input.image, top_k=5)]
-
-#         response = ask_llm_with_chunks(
-#             question=input.question,
-#             top_chunks=top_chunks,
-#             image_base64=input.image, # or any free OpenRouter model like "mistralai/mistral-7b-instruct"
-#         )
-
-#         return json.loads(response)
-
-#     except Exception as e:
-#         return {
-#             "success": False,
-#             "error": str(e)
-#         }
 
 # if __name__ == "__main__":
 #     import uvicorn
 #     uvicorn.run(app)
-## testing the ask_llm_with_chunks function ##
+# testing the ask_llm_with_chunks function ##
 # question = "should i take this course?"
 # top_chunks = [chunk for _, chunk in search(query=question, top_k=5)]
 
@@ -176,21 +147,3 @@ async def handle_query(request: Request):
 #     question=question,
 #     top_chunks=top_chunks
 # ))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
