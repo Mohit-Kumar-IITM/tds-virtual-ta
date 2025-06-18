@@ -118,7 +118,10 @@ def ask_llm_with_chunks(question, top_chunks, image_base64=None):
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions."}
+    return {
+            "message": "Welcome to the AI-powered Q&A API. Use POST /api/ to ask questions.",
+            "version": "2.0.0"
+        }
 @app.post("/api/")
 async def handle_query(request: Request):
     try:
